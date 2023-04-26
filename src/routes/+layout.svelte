@@ -47,7 +47,7 @@
     <div id="content">
         {#if user}
         <div id="topbar" bind:this={topbar}>
-            <div class="topbar-bg" style:background-color="var(--header-color)" style:opacity={`${headerOpacity}`}/>       
+            <div class="topbar-bg" style:background-color={$page.data.color? $page.data.color : "var(--header-color)"} style:opacity={`${headerOpacity}`}/>       
             <Header />
         </div>
         {/if}
@@ -94,6 +94,7 @@
 					top: 0;
 					left: 0;
 					z-index: -1;
+					background-image: linear-gradient(rgba(0,0,0,0.2) 0 0);
 				}
 				@include breakpoint.up('md') {
 					padding: 0 30px;
