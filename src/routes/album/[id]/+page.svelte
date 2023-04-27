@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Album } from 'lucide-svelte';
-    import { ItemPage } from '$components';
+    import { ItemPage,TrackList  } from '$components';
     import type {PageData} from './$types';
   import { getCopyrightSymbol } from '$helpers';
     export let data:PageData;
@@ -24,6 +24,7 @@ image={album.images.length > 0 ? album.images[0].url : undefined }
 
     <h5>{album.album_type}</h5>
     <h1>{album.name}</h1>
+    <TrackList tracks={album.tracks.items}  />
     <div class="tracks">
         <ul>
             {#each album.tracks.items as track}
