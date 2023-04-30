@@ -14,10 +14,14 @@
     export let element: Element;
     export let variant: 'solid' | 'outline' | 'danger' = 'solid';
     export let className: string ='';
+    let node: HTMLButtonElement | HTMLAnchorElement;
+    export function focus() {
+        node.focus();
+    }
 
 </script>
 
-<svelte:element this={element} class="button button-{variant} {className}" on:click {...$$restProps}>
+<svelte:element bind:this={node} this={element} class="button button-{variant} {className}" on:click {...$$restProps}>
 <slot />
 </svelte:element>
 
