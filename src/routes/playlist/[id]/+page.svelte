@@ -2,19 +2,25 @@
 	import { page } from '$app/stores';
 	import { Button, ItemPage } from '$components';
 	import TrackList from '$components/TrackList.svelte';
-	import type { PageData } from './$types';
+	import { Heart } from 'lucide-svelte';
+	import type { ActionData, PageData } from './$types';
+  import { applyAction, enhance } from '$app/forms';
 
 	export let data: PageData;
+	export let form: ActionData;
 
 	let isLoading = false;
+	let isLoadingfollow = false;
+	let followButton: Button<'button'>;
 
 	$: color = data.color;
 	$: playlist = data.playlist;
 	$: tracks = data.playlist.tracks;
+	$: isFollowing = data.isFollowing;
 	$: currentPage = $page.url.searchParams.get('page') || 1;
 
 	let filteredTracks: SpotifyApi.TrackObjectFull[];
-    $: console.log(playlist)
+
 	$: {
 		filteredTracks = [];
 		tracks.items.forEach((item) => {
@@ -51,6 +57,38 @@
 			<span>{followersFormat.format(playlist.followers.total)}</span>
 			<span>{playlist.tracks.total} Tracks</span>
 		</p>
+	</div>
+
+	<div class="playlist-actions">
+		{#if data.user?.id === playlist.owner.id}
+			<Button element="a" variant="outline">Edit Playlist</Button>
+		{:else if isFollowing !== null}
+			<form
+				class="follow-form"
+				method="POST"
+				action={`?/${isFollowing ? 'unFollowPlaylist' : 'followPlaylist'}`}
+				use:enhance={() => {
+					isLoadingfollow = true;
+					return async ({result}) =>{
+						isLoadingfollow = false;
+						await applyAction(result);
+						followButton.focus();
+						if(result.type === 'success'){
+							isFollowing = !isFollowing;
+						}
+					}
+				}}
+			>
+				<Button bind:this={followButton} element="button" type="submit" variant="outline" disabled={isLoadingfollow}>
+					<Heart aria-hidden focusable="false" fill={isFollowing ? 'var(--text-color)' : 'none'} />
+					{isFollowing ? 'Unfollow' : 'Follow'}
+					<span class="visually-hidden">{playlist.name} playlist</span>
+				</Button>
+				{#if form?.followError}
+					<p class="error">{form.followError}</p>
+				{/if}
+			</form>
+		{/if}
 	</div>
 
 	{#if playlist.tracks.items.length > 0}
@@ -135,6 +173,27 @@
 		justify-content: space-between;
 		:global(html.no-js) & {
 			display: flex;
+		}
+	}
+	.playlist-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin: 10px 0 30px;
+		.follow-form {
+			:global(.button) {
+				display: flex;
+				align-items: center;
+				:global(svg) {
+					margin-right: 10px;
+					width: 22px;
+					height: 22px;
+				}
+			}
+			p.error {
+				text-align: right;
+				color: var(--error);
+				font-size: functions.toRem(14);
+			}
 		}
 	}
 </style>
