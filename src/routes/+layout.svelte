@@ -5,9 +5,10 @@
     import {hideAll} from 'tippy.js';
     import 'nprogress/nprogress.css';
     import 'modern-normalize/modern-normalize.css';
-    import {Navigation,Header} from '$components';
+    import {Navigation,Header,Toasts} from '$components';
     import '../styles/main.scss';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { toasts } from '$stores';
     export let data: LayoutData;
 
     NProgress.configure({showSpinner: false});
@@ -37,6 +38,7 @@
 <a href='#main-content' class='skip-link' >Skip to Content</a>
 {/if}
 
+<Toasts />
 
 <div id='main'>
     {#if user}
